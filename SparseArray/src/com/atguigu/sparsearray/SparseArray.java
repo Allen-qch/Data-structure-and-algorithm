@@ -1,7 +1,15 @@
 package com.atguigu.sparsearray;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
 public class SparseArray {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		//创建一个二维棋盘，其中无子表示0；1表示黑子；2表示蓝子
 		int chessArr1[][] = new int[11][11];
 		chessArr1[1][2] = 1;
@@ -81,11 +89,69 @@ public class SparseArray {
 		}
 		
 		//四、将稀疏数组保存到磁盘上，如map.data
-		System.out.println("将稀疏数组保存到磁盘上，如map.data---");
 		
-		
-		
-		
+			System.out.println("将稀疏数组保存到磁盘上，如map.data---");
+			File f = new File("E:\\map.data");
+			FileOutputStream fos = new FileOutputStream(f);
+			OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+			System.out.println("写入中------");
+			for(int i=0;i<sparseArray.length;i++) {
+				osw.write(sparseArray[i][0]+","+sparseArray[i][0]+","+sparseArray[i][0]+ ",");
+			}
+			osw.close();
+			fos.close();
+			System.out.println("写入磁盘成功");
+			
+		//五、将磁盘的文件读出来
+			
+			//读取磁盘中的map.data文件
+			System.out.println("读取中--------------");
+			FileInputStream fis = new FileInputStream(f);
+			InputStreamReader isr = new InputStreamReader(fis,"UTF-8");
+			StringBuffer sb = new StringBuffer();
+			while(isr.ready()) {
+				sb.append((char)isr.read());
+			}
+			isr.close();
+			fis.close();
+			System.out.println("读取成功");
+			String ss = sb.toString();
+			String[] sb1 = sb.toString().split(",");
+			System.out.printf("从磁盘上读取的字符串为：\n%s\n",ss);	//格式化输出
+			//恢复稀疏数组
+			int sum1 = 0;
+			int[][] sparseArr1 = new int[sb1.length/3][3];
+			sparseArr1[0][0] = Integer.parseInt(sb1[0]);
+			sparseArr1[0][1] = Integer.parseInt(sb1[1]);
+			sparseArr1[0][2] = Integer.parseInt(sb1[2]);
+			for(int i=3;i<sb1.length;i+=3) {
+				sum1++;
+				sparseArr1[sum1][0] = Integer.parseInt(sb1[i]);
+				sparseArr1[sum1][1] = Integer.parseInt(sb1[i+1]);
+				sparseArr1[sum1][2] = Integer.parseInt(sb1[i+2]);
+			}
+			System.out.println("还原后的稀疏数组为：");
+			for(int i=0;i<sparseArr1.length;i++) {
+				System.out.printf("%d\t%d\t%d\n", sparseArr1[i][0], sparseArr1[i][1], sparseArr1[i][2]);
+			}
+			//恢复成棋盘数组
+			int[][] chessArr3 = new int[sparseArr1[0][0]][sparseArr1[0][1]]; 
+			for(int i=1;i<sparseArr1.length;i++) {
+				chessArr3[sparseArr1[i][0]][sparseArr1[i][1]] = sparseArr1[i][2]; 
+			}
+			//显示棋盘二维数组
+			for(int[] chessArr00:chessArr3) {
+				for(int data00:chessArr00) {
+					System.out.printf("%d\t",data00);
+				}
+				System.out.println();//作用：输入一行之后转为下一行
+			}
+			/*for(int[] a : chessArr3) {
+				for(int b : a) {
+					System.out.printf("%d\t", b);
+				}
+				System.out.println();
+			}*/
 	}
 	
 	
